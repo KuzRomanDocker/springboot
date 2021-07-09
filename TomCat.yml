@@ -1,0 +1,68 @@
+---
+- name: Install TomCat
+  hosts: all
+  gather_facts: false
+  become: yes
+
+  tasks:
+  - name: Update system
+    command: yum -y update
+
+  - name: install wget
+    yum:
+      name: wget
+      state: present
+
+  - name: install openjdk
+    yum:
+      name:  java-1.8.0-openjdk-devel
+      state: present
+
+  - name: add tomcat group
+    group:
+      name: tomcat
+
+  - name: add tomcat user
+    user:
+      name: tomcat
+      group: tomcat
+      home: /user/share/tomcat
+      createhome: no
+
+  - name: create /opt/tomcat directory
+    file:
+      path: /opt/tomcat
+      state: directory
+      mode: 0755
+
+  - name: download & unarchive
+    unarchive:
+      src: http://apache.cs.utah.edu/tomcat/tomcat-9/v9.0.50/bin/apache-tomcat-9.0.50.tar.gz
+      dest: /opt/tomcat
+      remote_src: yes
+      extra_opts: [--strip-components=1]
+
+  - name: Change ownership
+    file:
+      path: /opt/tomcat
+      owner: tomcat
+      group: tomcat
+      mode: "u+rwx,g+rx,o=rx"
+      recurse: yes
+      state: directory
+
+  - name: Copy Tomcat service from local to remote
+    copy:
+       src: tomcat.service
+       dest: /etc/systemd/system/
+       mode: 0755
+
+  - name: Start and enable Tomcat service
+    systemd:
+      name: tomcat
+      state: started
+
+  - name: enable jenkins
+    systemd:
+      name: tomcat
+      enabled: true
