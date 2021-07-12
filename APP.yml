@@ -13,18 +13,18 @@
       name:  java
       state: present
 
-  - name: Copy AP{P service from local to remote
+  - name: Copy APP service from local to remote
     copy:
-       src: tomcat.service
+       src: spring.service
        dest: /etc/systemd/system/
        mode: 0755
 
   - name: Start and enable APP service
     systemd:
-      name: tomcat
+      name: spring
       state: started
 
   - name: enable APP
     systemd:
-      name: tomcat
+      name: spring
       enabled: true
