@@ -1,10 +1,10 @@
 provider "aws" {
-  region = "us-east-1"
+  region = "eu-central-1"
 }
 
 terraform {
   backend "s3" {
-    bucket = "dev-project-alfa-terraform-state"
+    bucket = "project-alfa-terraform-state"
     key    = "terraform.tfstate"
     region = "us-east-1"
   }
@@ -40,7 +40,7 @@ resource "aws_instance" "Jenkins" {
   }
 }
 
-resource "aws_instance" "TomCat" {
+resource "aws_instance" "APP" {
   ami                    = data.aws_ami.latest_amazon_linux.id
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.my_servers.id]
@@ -56,11 +56,11 @@ resource "aws_instance" "TomCat" {
     }
   }
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ec2-user -i '${self.public_ip},' --private-key ${var.pr_key} -e 'pub_key=${var.pb_key}' TomCat.yml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ec2-user -i '${self.public_ip},' --private-key ${var.pr_key} -e 'pub_key=${var.pb_key}' APP.yml"
 
   }
   tags = {
-    Name  = "TomCat Project Alfa - ${terraform.workspace}"
+    Name  = "APP Project Alfa - ${terraform.workspace}"
     Owner = "Roman"
   }
 }

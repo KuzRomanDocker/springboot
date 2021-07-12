@@ -1,7 +1,7 @@
 variable "instance_type" {
   description = "Enter Instance Type"
   type        = string
-  default     = "t2.micro"
+  default     = "t2.nano"
 }
 
 variable "pb_key" {

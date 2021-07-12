@@ -1,0 +1,30 @@
+---
+- name: Install Java
+  hosts: all
+  gather_facts: false
+  become: yes
+
+  tasks:
+  - name: Update system
+    command: yum -y update
+
+  - name: install java
+    yum:
+      name:  java
+      state: present
+
+  - name: Copy AP{P service from local to remote
+    copy:
+       src: tomcat.service
+       dest: /etc/systemd/system/
+       mode: 0755
+
+  - name: Start and enable APP service
+    systemd:
+      name: tomcat
+      state: started
+
+  - name: enable APP
+    systemd:
+      name: tomcat
+      enabled: true
